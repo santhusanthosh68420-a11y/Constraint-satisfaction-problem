@@ -1,0 +1,72 @@
+# Constraint Satisfaction Problem (CSP)
+# Timetable Scheduling using Backtracking
+
+# Variables -> Subjects
+subjects = ["Maths", "Python", "DBMS", "AI"]
+
+# Domains -> Available time slots
+time_slots = ["9:00 AM", "11:00 AM", "2:00 PM"]
+
+# Check whether assigning a time slot is valid
+def is_valid(subject, slot, assignment):
+
+    # Constraint 1:
+    # Maths and Python cannot be scheduled at the same time
+    if subject == "Maths" and assignment.get("Python") == slot:
+        return False
+
+    if subject == "Python" and assignment.get("Maths") == slot:
+        return False
+
+    # Constraint 2:
+    # DBMS and AI cannot be scheduled at the same time
+    if subject == "DBMS" and assignment.get("AI") == slot:
+        return False
+
+    if subject == "AI" and assignment.get("DBMS") == slot:
+        return False
+
+    return True
+
+
+# Backtracking function
+def backtracking(assignment):
+
+    # All subjects are assigned
+    if len(assignment) == len(subjects):
+        return assignment
+
+    # Select an unassigned subject
+    for subject in subjects:
+        if subject not in assignment:
+
+            # Try each available time slot
+            for slot in time_slots:
+
+                if is_valid(subject, slot, assignment):
+
+                    # Assign slot to subject
+                    assignment[subject] = slot
+
+                    # Recursively solve remaining subjects
+                    result = backtracking(assignment)
+
+                    if result is not None:
+                        return result
+
+                    # Backtrack
+                    del assignment[subject]
+
+            return None
+
+
+# Start CSP solving
+solution = backtracking({})
+
+
+# Display final timetable
+print("Final Timetable")
+print("-------------------------")
+
+for subject in subjects:
+    print(subject, "->", solution[subject])
