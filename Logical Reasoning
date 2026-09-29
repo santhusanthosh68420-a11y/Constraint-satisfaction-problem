@@ -1,0 +1,103 @@
+# Unit - 4
+# Logical Reasoning
+# Rule-Based Expert System using Backward Chaining
+
+# Facts about the student
+facts = {
+    "GoodAttendance",
+    "HighMarks",
+    "CompletedProjects",
+    "GoodProgrammingSkills"
+}
+
+# Rules for academic guidance
+rules = {
+    "GoodAcademicPerformance": [
+        ["HighMarks", "GoodAttendance"]
+    ],
+
+    "NeedsExtraPractice": [
+        ["LowMarks"],
+        ["PoorProgrammingSkills"]
+    ],
+
+    "EligibleForPlacement": [
+        ["GoodAcademicPerformance", "CompletedProjects"],
+        ["GoodProgrammingSkills", "GoodAttendance"]
+    ],
+
+    "ReadyForInterview": [
+        ["EligibleForPlacement", "GoodProgrammingSkills"]
+    ]
+}
+
+
+# Backward Chaining function
+def backward_chaining(goal, visited=None):
+
+    if visited is None:
+        visited = set()
+
+    print("Trying to prove:", goal)
+
+    # If goal is already a fact
+    if goal in facts:
+        print("  Fact found:", goal)
+        return True
+
+    # Avoid repeated checking
+    if goal in visited:
+        return False
+
+    visited.add(goal)
+
+    # Check rules that can prove the goal
+    if goal in rules:
+
+        for conditions in rules[goal]:
+
+            print("  Checking rule:", goal, "<-", conditions)
+
+            all_true = True
+
+            # Prove every condition of the rule
+            for condition in conditions:
+
+                if not backward_chaining(condition, visited):
+                    all_true = False
+                    break
+
+            if all_true:
+                print("  Rule satisfied. Proved:", goal)
+                return True
+
+    print("  Cannot prove:", goal)
+    return False
+
+
+# Select the goal
+goal = "EligibleForPlacement"
+
+print("STUDENT ACADEMIC GUIDANCE")
+print("--------------------------")
+print("Facts:")
+for fact in facts:
+    print("-", fact)
+
+print("\nSelected Goal:", goal)
+print("\nReasoning Steps:")
+print("----------------")
+
+# Start backward chaining
+result = backward_chaining(goal)
+
+# Display final conclusion
+print("\nFinal Conclusion")
+print("----------------")
+
+if result:
+    print(goal, "is TRUE")
+    print("The student is eligible for placement.")
+else:
+    print(goal, "is FALSE")
+    print("The student is not eligible for placement.")
